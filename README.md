@@ -7,16 +7,17 @@
 > **⚠️ Beta Software Notice**
 > Switch is currently in beta. Despite handling over 100 million requests per month in production, we're still refining features and may introduce breaking changes. Use in production at your own discretion.
 
-## ✨ Features
+## ✨ Switch is the lightweight, open-source LLM routing platform
 
-• 🚀 **OpenAI-compatible API** - Drop-in replacement for `/v1/chat/completions`
-• 📛 **Named routes** - Use `smart-model` instead of `gpt-4o-really-long-model-name-v3`
-• 🔄 **Automatic fallbacks** - When OpenAI is down, Switch tries Anthropic, then AWS Bedrock
-• ⚡ **Circuit breakers** - Stop hitting broken providers automatically
-• 🏊 **Pool-based routing** - Group providers for sophisticated load balancing
-• 🌐 **Multi-provider support** - OpenAI, Anthropic, AWS Bedrock, Together AI, RunPod, custom APIs
-• 📊 **Health monitoring** - Real-time provider health checks and metrics
-• 🔒 **Enterprise security** - API key authentication, rate limiting, CORS protection
+- 🚀 **OpenAI-compatible API** - Drop-in replacement for `/v1/chat/completions`
+- 📛 **Named routes** - Use `smart-model` instead of `gpt-4o-really-long-model-name-v3`
+- 🔄 **Automatic fallbacks** - When OpenAI is down, Switch tries Anthropic, then AWS Bedrock
+- ⚡ **Circuit breakers** - Stop hitting broken providers automatically
+- 🏊 **Pool-based routing** - Group providers for sophisticated load balancing
+- 🌐 **Multi-provider support** - OpenAI, Anthropic, AWS Bedrock, Together AI, RunPod, custom APIs
+- 📊 **Health monitoring** - Real-time provider health checks and metrics
+- 🔒 **Enterprise security** - API key authentication, rate limiting, CORS protection
+- 📦 **Production ready** - Handles 100M+ requests per month in production
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue.svg)](https://www.typescriptlang.org/)
 [![Bun](https://img.shields.io/badge/Bun-1.0+-black.svg)](https://bun.sh/)
@@ -185,6 +186,21 @@ kubectl apply -f k8s/
 ## License
 
 This project is licensed under the Sustainable Use License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Switch thrives on community contributions! Whether you're fixing bugs, adding providers, or improving docs - we'd love your help.
+
+- **Found a bug or have an idea?** Open a [GitHub issue](https://github.com/Switchdotnew/switch-router/issues)
+- **Want to add a new provider?** Check out our [provider guide](docs/providers.md)
+- **Improving documentation?** All docs live in the `/docs` folder
+- **Need help getting started?** Reach out at [support@switch.new](mailto:support@switch.new)
+
+## Contributors
+
+<a href="https://github.com/Switchdotnew/switch-router/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Switchdotnew/switch-router" />
+</a>
 
 ## Support
 
