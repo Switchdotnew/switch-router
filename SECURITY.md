@@ -2,7 +2,7 @@
 
 ## 🛡️ Supported Versions
 
-We actively support the following versions of LLM Router with security updates:
+We actively support the following versions of Switch with security updates:
 
 | Version | Supported              |
 | ------- | ---------------------- |
@@ -71,7 +71,7 @@ We believe in recognising security researchers who help keep our users safe:
 
 - **Hall of Fame**: Public recognition on our security page
 - **CVE Credit**: Proper attribution in CVE entries
-- **Swag**: Vepler security researcher merchandise
+- **Swag**: Switch security researcher merchandise
 - **Bounty Programme**: Contact us for details on our bug bounty programme
 
 ## 🔒 Security Best Practices
@@ -185,7 +185,7 @@ The application automatically sets secure HTTP headers:
 
 - **Watch this repository** to receive notifications
 - **Subscribe to releases** for security announcements
-- **Follow [@VeplerSecurity](https://twitter.com/VeplerSecurity)** for updates
+- **Follow [@SwitchSecurity](https://twitter.com/SwitchSecurity)** for updates
 - **Join our security mailing list**: [security-announce@switch.new](mailto:security-announce@switch.new)
 
 ### Update Process
@@ -199,7 +199,7 @@ The application automatically sets secure HTTP headers:
 
 - **Security Team**: [security@switch.new](mailto:security@switch.new)
 - **General Support**: [support@switch.new](mailto:support@switch.new)
-- **PGP Key**: Available at [keybase.io/vepler](https://keybase.io/vepler)
+- **PGP Key**: Available at [keybase.io/switch](https://keybase.io/switch)
 
 ## 🏅 Security Hall of Fame
 
