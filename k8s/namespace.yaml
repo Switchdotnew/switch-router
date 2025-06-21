@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: switch
+  labels:
+    name: switch
+    app.kubernetes.io/name: switch
+    app.kubernetes.io/instance: production

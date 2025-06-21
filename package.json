@@ -1,0 +1,119 @@
+{
+  "name": "switch",
+  "version": "0.1.0",
+  "description": "High-performance LLM routing microservice for VLLM-compatible APIs",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "bun build src/index.ts --outdir ./dist --target bun --external hono --external zod --external pino",
+    "build:types": "bun run typecheck && node scripts/build-types-package.js",
+    "build:production": "NODE_ENV=production bun run build",
+    "dev": "bun --hot src/index.ts",
+    "dev:doppler": "doppler run -- bun --hot src/index.ts",
+    "start": "bun dist/index.js",
+    "start:production": "NODE_ENV=production bun dist/index.js",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "test": "bun test --timeout 30000",
+    "test:unit": "bun test src/ --timeout 30000",
+    "test:smoke": "bun test tests/smoke/ --timeout 10000",
+    "test:integration": "bun test tests/integration/ --timeout 60000",
+    "test:e2e": "bun test tests/e2e/ --timeout 120000",
+    "test:all": "bun run test:unit && bun run test:smoke && bun run test:integration",
+    "test:production": "NODE_ENV=production bun run test:smoke",
+    "typecheck": "bun tsc --noEmit",
+    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
+    "quality:check": "bun run typecheck && bun run lint:check && bun run format:check && bun run test",
+    "quality:fix": "bun run typecheck && bun run lint && bun run format && bun run test",
+    "docker:build": "docker build -t switch:latest .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env.production switch:latest",
+    "k8s:deploy": "kubectl apply -f k8s/namespace.yaml -f k8s/configmap.yaml -f k8s/deployment.yaml -f k8s/service.yaml",
+    "k8s:delete": "kubectl delete -f k8s/",
+    "security:audit": "bun audit",
+    "prepare": "node -e \"if (process.env.NODE_ENV !== 'production' && !process.env.CI && require('fs').existsSync('.git')) { try { require('child_process').execSync('husky', { stdio: 'inherit' }); } catch (e) {} }\"",
+    "postinstall": "node -e \"if (process.env.NODE_ENV !== 'production' && !process.env.CI && require('fs').existsSync('.git')) { try { require('child_process').execSync('husky install', { stdio: 'inherit' }); } catch (e) {} }\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Switchdotnew/switch-router"
+  },
+  "author": "Switch <goran@switch.new>",
+  "private": false,
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "switch",
+    "ai",
+    "api",
+    "proxy",
+    "vllm",
+    "llm",
+    "typescript",
+    "bun",
+    "hono",
+    "microservice",
+    "load-balancer",
+    "circuit-breaker",
+    "streaming",
+    "openai",
+    "anthropic"
+  ],
+  "homepage": "https://github.com/Switchdotnew/switch-router#readme",
+  "bugs": {
+    "url": "https://github.com/Switchdotnew/switch-router/issues"
+  },
+  "dependencies": {
+    "pino": "^8.19.0",
+    "pino-pretty": "^10.3.1",
+    "hono": "^4.7.11",
+    "zod": "^3.25.64",
+    "ioredis": "^5.4.1"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.0",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.1",
+    "@types/bun": "latest",
+    "@types/node": "^24.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "@commitlint/cli": "^19.0.3",
+    "@commitlint/config-conventional": "^19.0.3",
+    "conventional-changelog-conventionalcommits": "^8.0.0",
+    "eslint": "^9.28.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "semantic-release": "^24.0.0",
+    "typescript": "^5.8.3",
+    "@types/ioredis": "^5.0.0",
+    "@testcontainers/redis": "^10.18.0"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "packageManager": "bun@1.1.38",
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "body-max-line-length": [
+        0,
+        "always",
+        200
+      ]
+    }
+  }
+}

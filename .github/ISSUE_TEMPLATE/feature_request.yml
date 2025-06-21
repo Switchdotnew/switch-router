@@ -1,0 +1,153 @@
+name: 🚀 Feature Request
+description: Suggest a new feature or enhancement for Model Router
+title: "[FEATURE] "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! We appreciate your input and want to understand your use case.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission Checklist
+      description: Please verify the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this feature hasn't been requested
+          required: true
+        - label: I have read the documentation to confirm this feature doesn't already exist
+          required: true
+        - label: This is a feature request, not a bug report
+          required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Feature Type
+      description: What type of feature are you requesting?
+      options:
+        - New Provider Integration
+        - Performance Enhancement
+        - Monitoring/Observability
+        - Security Enhancement
+        - Developer Experience
+        - API Enhancement
+        - Configuration Feature
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Must Have (Blocking our adoption)
+        - Should Have (Important for our use case)
+        - Could Have (Nice to have)
+        - Won't Have (Future consideration)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What is the motivation?
+      placeholder: |
+        Currently, when using Model Router...
+        This creates problems because...
+        Our team needs...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your preferred solution in detail
+      placeholder: |
+        I would like Model Router to...
+        This could be implemented by...
+        The API would look like...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative approaches or workarounds?
+      placeholder: |
+        Alternative 1: ...
+        Alternative 2: ...
+        Current workaround: ...
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Use Case Examples
+      description: Provide specific examples of how this feature would be used
+      placeholder: |
+        Example 1: When a user wants to...
+        Example 2: In a production environment where...
+        Example 3: For development teams that...
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: What specific behavior or functionality would indicate this feature is complete?
+      placeholder: |
+        - [ ] Feature X is available in the API
+        - [ ] Configuration option Y is supported
+        - [ ] Documentation includes examples
+        - [ ] Tests cover the new functionality
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact Analysis
+      description: How would this feature affect existing functionality?
+      placeholder: |
+        Breaking changes: None/Minimal/Major
+        Performance impact: ...
+        Security considerations: ...
+        Backwards compatibility: ...
+
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: Implementation Considerations
+      description: Technical aspects to consider
+      options:
+        - label: This feature requires API changes
+        - label: This feature requires configuration changes
+        - label: This feature may impact performance
+        - label: This feature requires new dependencies
+        - label: This feature affects Docker deployment
+        - label: This feature requires documentation updates
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, mockups, diagrams, or references that would help
+      placeholder: |
+        Links to similar implementations:
+        Mockups or diagrams:
+        Related issues:
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you like to contribute to implementing this feature?
+      options:
+        - label: I would like to work on implementing this feature
+        - label: I can help with testing and feedback
+        - label: I can help with documentation
+        - label: I need guidance on how to contribute

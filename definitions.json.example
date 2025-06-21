@@ -1,0 +1,52 @@
+{
+  "pools": [
+    {
+      "id": "chat-pool",
+      "name": "Chat Pool",
+      "description": "General chat models pool",
+      "providers": [
+        {
+          "name": "openai-gpt4",
+          "provider": "openai",
+          "modelName": "gpt-4o",
+          "apiBase": "https://api.openai.com/v1",
+          "credentialsRef": "openai-api-key",
+          "priority": 1,
+          "weight": 100,
+          "costPerToken": 0.00003,
+          "useModelDefaults": true
+        }
+      ],
+      "routingStrategy": "cost_optimized",
+      "healthThresholds": {
+        "minHealthyProviders": 1,
+        "responseTime": 10000,
+        "errorRate": 0.05
+      },
+      "circuitBreaker": {
+        "enabled": true,
+        "failureThreshold": 5,
+        "resetTimeout": 60000,
+        "monitoringWindow": 300000,
+        "minRequestsThreshold": 10,
+        "errorThresholdPercentage": 50
+      },
+      "fallbackPoolIds": []
+    }
+  ],
+  "models": {
+    "gpt-4o": {
+      "primaryPoolId": "chat-pool"
+    }
+  },
+  "credentialStores": {
+    "openai-store": {
+      "type": "simple",
+      "source": "env",
+      "config": {
+        "apiKeyVar": "OPENAI_API_KEY"
+      },
+      "cacheTtl": 3600
+    }
+  }
+}

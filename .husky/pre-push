@@ -1,0 +1,24 @@
+# Run comprehensive quality checks before push
+echo "🚀 Running pre-push quality checks..."
+
+# TypeScript compilation
+echo "🔍 Type checking..."
+bun run typecheck
+
+# Linting
+echo "🧹 Linting..."
+bun run lint:check
+
+# Tests (unit tests only, skip integration tests that need API credentials)
+echo "🧪 Running unit tests..."
+bun test src/ tests/smoke/
+
+# Build verification
+echo "🔨 Build verification..."
+bun run build
+
+# Types package build
+echo "📦 Types package build..."
+bun run build:types
+
+echo "✅ All pre-push checks passed\!"

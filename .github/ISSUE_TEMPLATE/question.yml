@@ -1,0 +1,106 @@
+name: ❓ Question
+description: Ask a question about Model Router usage or configuration
+title: "[QUESTION] "
+labels: ["question", "documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about Model Router? We're here to help! Please provide as much context as possible.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission Checklist
+      description: Please verify the following before asking
+      options:
+        - label: I have read the README and documentation
+          required: true
+        - label: I have searched existing issues and discussions
+          required: true
+        - label: This is not a bug report or feature request
+          required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What category does your question fall into?
+      options:
+        - Configuration and Setup
+        - API Usage
+        - Performance and Optimization
+        - Security and Authentication
+        - Provider Integration
+        - Deployment and Infrastructure
+        - Troubleshooting
+        - Best Practices
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: |
+        I'm trying to understand how to...
+        I'm having trouble with...
+        What's the best way to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context and Background
+      description: Provide context about your use case or what you're trying to achieve
+      placeholder: |
+        I'm building an application that...
+        My current setup includes...
+        I need to...
+
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What Have You Tried?
+      description: What approaches or solutions have you already attempted?
+      placeholder: |
+        I tried configuring...
+        I looked at the documentation section...
+        I attempted to...
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment Information
+      description: Relevant environment details (if applicable)
+      placeholder: |
+        - Model Router Version: 1.0.0
+        - Deployment: Docker/Bare Metal/Cloud
+        - Scale: Number of requests/day
+        - Providers: OpenAI, Anthropic, etc.
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Current Configuration
+      description: Relevant configuration snippets (remove sensitive information)
+      placeholder: |
+        ```json
+        {
+          "relevant": "configuration here"
+        }
+        ```
+
+  - type: checkboxes
+    id: help_improve
+    attributes:
+      label: Help Us Improve
+      description: How can we make the documentation better?
+      options:
+        - label: This question indicates missing documentation
+        - label: Existing documentation could be clearer
+        - label: More examples would be helpful
+        - label: A tutorial or guide would be useful

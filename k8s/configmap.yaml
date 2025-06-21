@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: switch-config
+  namespace: switch
+  labels:
+    app.kubernetes.io/name: switch
+    app.kubernetes.io/component: config
+data:
+  NODE_ENV: "production"
+  SERVER_HOST: "0.0.0.0"
+  SERVER_PORT: "3000"
+  LOG_LEVEL: "info"
+  DISABLE_PRETTY_LOGGING: "true"
+  PERFORMANCE_MODE: "high_throughput"
+  LIGHTWEIGHT_VALIDATION: "true"
+  DISABLE_DEBUG_LOGGING: "true"
+  MAX_CONCURRENT_REQUESTS: "100"
+  PERMANENT_FAILURE_ENABLED: "true"
+  PERMANENT_FAILURE_TIMEOUT_MULTIPLIER: "5"
+  PERMANENT_FAILURE_BASE_TIMEOUT_MS: "300000"
+  PERMANENT_FAILURE_MAX_BACKOFF_MULTIPLIER: "4"
+  PERMANENT_FAILURE_ERROR_PATTERNS: "404.*not found,401.*unauthorized,403.*forbidden"
+  PROMETHEUS_METRICS_ENABLED: "true"
+  HEALTH_CHECK_INTERVAL: "30000"
+  HEALTH_CHECK_TIMEOUT: "10000"
+  SECURITY_HEADERS_ENABLED: "true"

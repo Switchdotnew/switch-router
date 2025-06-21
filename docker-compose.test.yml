@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  switch:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - LOG_LEVEL=info
+      - DEFAULT_MODEL=qwen3
+      # For production, provide MODEL_DEFINITIONS environment variable:
+      # - MODEL_DEFINITIONS={"modelName":{"name":"modelName","providers":[...],...}}
+      # Or mount your own definitions.json file with actual configuration
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

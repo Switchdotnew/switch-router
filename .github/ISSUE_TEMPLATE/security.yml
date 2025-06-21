@@ -1,0 +1,114 @@
+name: 🛡️ Security Issue
+description: Report a security vulnerability (for low-severity issues only)
+title: "[SECURITY] "
+labels: ["security", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **IMPORTANT SECURITY NOTICE** ⚠️
+        
+        **For critical security vulnerabilities that could be actively exploited, please DO NOT use this form.**
+        
+        Instead, email us directly at **security@switch.new** with "SECURITY VULNERABILITY" in the subject line.
+        
+        This form is only for low-severity security issues that don't pose immediate risk.
+
+  - type: checkboxes
+    id: security_check
+    attributes:
+      label: Security Severity Confirmation
+      description: Please confirm this is not a critical security issue
+      options:
+        - label: This is NOT a critical vulnerability that could be actively exploited
+          required: true
+        - label: I understand that critical vulnerabilities should be reported via email to security@switch.new
+          required: true
+        - label: This issue does not involve exposed secrets, authentication bypass, or remote code execution
+          required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Security Severity Level
+      description: How would you classify this security issue?
+      options:
+        - Low (Security hardening, best practices)
+        - Informational (Security guidance, documentation)
+        - Question (Security-related question)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Security Issue Description
+      description: Describe the security concern (avoid detailed exploitation steps for public issues)
+      placeholder: |
+        I noticed that the application...
+        This could potentially lead to...
+        The security concern is...
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Potential Impact
+      description: What could be the potential impact of this security issue?
+      placeholder: |
+        An attacker could potentially...
+        This might allow...
+        The risk level is low because...
+
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Suggested Mitigation
+      description: Do you have suggestions for how to address this security concern?
+      placeholder: |
+        This could be mitigated by...
+        Consider implementing...
+        Best practice would be...
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment Details
+      description: Where did you identify this security concern?
+      placeholder: |
+        - Model Router Version: 1.0.0
+        - Deployment Environment: Production/Development
+        - Configuration: Relevant security configuration
+        - Network Setup: Public/Private deployment
+
+  - type: checkboxes
+    id: disclosure
+    attributes:
+      label: Responsible Disclosure
+      description: Responsible disclosure agreement
+      options:
+        - label: I agree to responsible disclosure practices
+          required: true
+        - label: I will not publicly disclose details until the issue is resolved
+          required: true
+        - label: I understand this issue will be publicly visible on GitHub
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any other security-related information or context
+      placeholder: |
+        References to security standards:
+        Similar issues in other projects:
+        Additional context:
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        **Remember**: For critical vulnerabilities, email security@switch.new instead of using this form.
+        
+        Thank you for helping to keep Model Router secure! 🛡️

@@ -1,0 +1,2 @@
+# Validate commit message format
+bunx commitlint --edit

@@ -1,0 +1,67 @@
+name: Publish Types Package
+
+on:
+  workflow_call:
+    inputs:
+      tag_name:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag to publish (e.g., v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write # to enable use of OIDC for npm provenance
+
+jobs:
+  publish-types:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org/'
+          scope: '@vepler'
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build types package
+        run: |
+          # Get version from release tag or workflow input (strip 'v' prefix if present)
+          VERSION=${{ github.event.release.tag_name || inputs.tag_name }}
+          VERSION=${VERSION#v}
+          
+          echo "Using version: $VERSION"
+          # Update package.json version for types packaging
+          node -e "const fs = require('fs'); const pkg = require('./package.json'); pkg.version = '$VERSION'; fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+          
+          # Build the types package
+          bun run build:types
+        env:
+          CI: 'true'
+
+      - name: Publish types to npm
+        run: |
+          cd dist-types
+          echo "Publishing @vepler/llm-router-types@$(node -p "require('./package.json').version")"
+          # Configure npm authentication using the auth token
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
+          # Use npm for publishing (bun doesn't support npm publish with auth)
+          npm publish --access=restricted
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

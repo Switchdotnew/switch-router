@@ -1,0 +1,264 @@
+{
+  "info": {
+    "name": "Switch API",
+    "description": "Pool-based LLM routing service with circuit breakers, health monitoring, and fallback chains. Configure models via pools for sophisticated routing, load balancing, and high availability.",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "x-api-key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{API_KEY}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "API_KEY",
+      "value": "your-api-key-here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check service health status (no authentication required)"
+      },
+      "response": [
+        {
+          "name": "Healthy",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"status\": \"up\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "List Models",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/v1/models",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "models"]
+        },
+        "description": "Get list of available models (requires API key)"
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/models",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "models"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"object\": \"list\",\n  \"data\": [\n    {\n      \"id\": \"fast-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"smart-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"reliable-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"budget-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"enterprise-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Chat Completion",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"fast-model\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello, how are you?\"\n    }\n  ],\n  \"maxTokens\": 100,\n  \"temperature\": 0.7,\n  \"stream\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/chat/completions",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "chat", "completions"]
+        },
+        "description": "Create a chat completion using a specified model"
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"fast-model\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello, how are you?\"\n    }\n  ],\n  \"maxTokens\": 100,\n  \"temperature\": 0.7,\n  \"stream\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/chat/completions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "chat", "completions"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"id\": \"chatcmpl-123\",\n  \"object\": \"chat.completion\",\n  \"created\": 1677652288,\n  \"model\": \"fast-model\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"Hello! I'm doing well, thank you for asking.\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 10,\n    \"completion_tokens\": 12,\n    \"total_tokens\": 22\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Chat Completion (Streaming)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"smart-model\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Tell me a short story\"\n    }\n  ],\n  \"maxTokens\": 200,\n  \"temperature\": 0.8,\n  \"stream\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/chat/completions",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "chat", "completions"]
+        },
+        "description": "Create a streaming chat completion"
+      }
+    },
+    {
+      "name": "Text Completion",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"budget-model\",\n  \"prompt\": \"The weather today is\",\n  \"maxTokens\": 50,\n  \"temperature\": 0.7,\n  \"stream\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/completions",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "completions"]
+        },
+        "description": "Create a text completion using a specified model"
+      }
+    },
+    {
+      "name": "Chat Completion with JSON Mode",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"reliable-model\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a helpful assistant designed to output JSON.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Generate a JSON object with information about a cat\"\n    }\n  ],\n  \"maxTokens\": 150,\n  \"temperature\": 0.7,\n  \"responseFormat\": {\n    \"type\": \"json_object\"\n  },\n  \"stream\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/v1/chat/completions",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "chat", "completions"]
+        },
+        "description": "Create a chat completion with JSON response format"
+      }
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set timestamp for requests",
+          "pm.globals.set('timestamp', new Date().getTime());"
+        ]
+      }
+    }
+  ]
+}

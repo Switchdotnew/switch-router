@@ -1,0 +1,8 @@
+# Run lint-staged to check only staged files
+bunx lint-staged
+
+# Run a quick build to ensure no build errors
+echo "🔨 Running build check..."
+bun run build
+
+echo "✅ Pre-commit checks passed\!"

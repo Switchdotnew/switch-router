@@ -1,0 +1,93 @@
+# Pre-commit hooks configuration for Switch
+# Install with: pip install pre-commit && pre-commit install
+
+repos:
+  # Security scanning for secrets and sensitive data
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        name: Detect secrets
+        entry: detect-secrets-hook
+        types: [text]
+        args: ['--baseline', '.secrets.baseline']
+        exclude: |
+          (?x)^(
+            .*\.example\.(json|env|md)$|
+            .*\.postman_.*\.json$|
+            node_modules/.*|
+            \.git/.*|
+            docs/.*\.md$|
+            README\.md$|
+            SECURITY\.md$|
+            \.secrets\.baseline$
+          )$
+
+  # Additional secret scanning
+  - repo: https://github.com/gitguardian/ggshield
+    rev: v1.25.0
+    hooks:
+      - id: ggshield
+        language: python
+        stages: [commit]
+        exclude: |
+          (?x)^(
+            .*\.example\.(json|env|md)$|
+            node_modules/.*|
+            \.git/.*
+          )$
+
+  # Check for common security issues
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: check-yaml
+        exclude: ^k8s/.*\.yaml$  # Skip k8s templates with placeholders
+      - id: check-json
+        exclude: |
+          (?x)^(
+            .*\.example\.json$|
+            .*\.postman_.*\.json$
+          )$
+      - id: detect-private-key
+      - id: forbid-new-submodules
+      - id: trailing-whitespace
+        exclude: ^.*\.md$
+      - id: end-of-file-fixer
+        exclude: ^.*\.md$
+
+  # TypeScript and JavaScript linting
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        entry: npx eslint
+        language: node
+        types: [javascript, jsx, ts, tsx]
+        args: [--fix]
+        require_serial: false
+        additional_dependencies: []
+        minimum_pre_commit_version: 0.15.0
+
+  # Prevent committing sensitive file patterns
+  - repo: local
+    hooks:
+      - id: forbid-sensitive-files
+        name: Forbid sensitive files
+        entry: bash -c 'if [ -f definitions.json ] || [ -f .env ] || find . -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name "*.pfx" | grep -q .; then echo "ERROR: Sensitive files detected. Remove them before committing."; exit 1; fi'
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  # Check for hardcoded API keys
+  - repo: local
+    hooks:
+      - id: check-api-keys
+        name: Check for hardcoded API keys
+        entry: bash -c 'if grep -r --exclude-dir=node_modules --exclude="*.example.*" --exclude="*.md" -E "(sk-[a-zA-Z0-9]{32,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z\-_]{35})" .; then echo "ERROR: Potential API keys found in code"; exit 1; fi'
+        language: system
+        pass_filenames: false
+        always_run: true

@@ -1,0 +1,205 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches: [ master, develop ]
+  push:
+    branches: [ master, develop ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        bun-version: [latest]
+        node-version: [18, 20, 22]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.bun-version }}
+
+      - name: Setup Node.js for compatibility testing
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Type check
+        run: bun run typecheck
+
+      - name: Lint
+        run: bun run lint:check
+
+      - name: Check formatting
+        run: bunx prettier --check "**/*.{ts,js,json,md}"
+
+      - name: Run unit tests
+        run: bun test src/
+
+      - name: Run smoke tests
+        run: bun test tests/smoke/
+
+      - name: Security audit
+        run: bun audit
+        continue-on-error: true
+
+      - name: Build
+        run: bun run build
+
+
+  docker:
+    name: Docker Build Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t llm-router:test .
+
+      - name: Test Docker image
+        run: |
+          docker run --rm -d --name test-container -p 3000:3000 llm-router:test
+          sleep 10
+          curl -f http://localhost:3000/health || exit 1
+          docker stop test-container
+
+  performance:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+
+      - name: Run performance benchmarks
+        run: |
+          # Start the server in background
+          bun run start &
+          SERVER_PID=$!
+          
+          # Wait for server to start
+          sleep 5
+          
+          # Basic performance test with curl
+          echo "Testing health endpoint performance..."
+          time for i in {1..100}; do
+            curl -s http://localhost:3000/health > /dev/null
+          done
+          
+          # Clean up
+          kill $SERVER_PID
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: test
+    
+    env:
+      # API Keys for provider testing
+      TEST_OPENAI_API_KEY: ${{ secrets.TEST_OPENAI_API_KEY }}
+      TEST_ANTHROPIC_API_KEY: ${{ secrets.TEST_ANTHROPIC_API_KEY }}
+      TEST_TOGETHER_API_KEY: ${{ secrets.TEST_TOGETHER_API_KEY }}
+      TEST_RUNPOD_API_KEY: ${{ secrets.TEST_RUNPOD_API_KEY }}
+      
+      # AWS Credentials for Bedrock testing
+      TEST_AWS_REGION: ${{ secrets.TEST_AWS_REGION }}
+      TEST_AWS_ACCESS_KEY_ID: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
+      TEST_AWS_SECRET_ACCESS_KEY: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
+      TEST_AWS_SESSION_TOKEN: ${{ secrets.TEST_AWS_SESSION_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Debug environment variables (masked)
+        run: |
+          echo "🔍 Checking environment variable availability..."
+          echo "TEST_OPENAI_API_KEY: $([ -n "$TEST_OPENAI_API_KEY" ] && echo "✅ SET" || echo "❌ NOT SET")"
+          echo "TEST_ANTHROPIC_API_KEY: $([ -n "$TEST_ANTHROPIC_API_KEY" ] && echo "✅ SET" || echo "❌ NOT SET")"
+          echo "TEST_TOGETHER_API_KEY: $([ -n "$TEST_TOGETHER_API_KEY" ] && echo "✅ SET" || echo "❌ NOT SET")"
+          echo "TEST_RUNPOD_API_KEY: $([ -n "$TEST_RUNPOD_API_KEY" ] && echo "✅ SET" || echo "❌ NOT SET")"
+          echo "TEST_AWS_REGION: $([ -n "$TEST_AWS_REGION" ] && echo "✅ SET" || echo "❌ NOT SET")"
+          echo "TEST_AWS_ACCESS_KEY_ID: $([ -n "$TEST_AWS_ACCESS_KEY_ID" ] && echo "✅ SET" || echo "❌ NOT SET")"
+          echo "TEST_AWS_SECRET_ACCESS_KEY: $([ -n "$TEST_AWS_SECRET_ACCESS_KEY" ] && echo "✅ SET" || echo "❌ NOT SET")"
+          echo ""
+          echo "💡 If variables show 'NOT SET', configure them in GitHub repo settings:"
+          echo "   Settings → Secrets and variables → Actions → Repository secrets"
+
+      - name: Debug credential detection logic
+        run: |
+          echo "🧪 Testing credential detection logic..."
+          bun run debug-credentials.js
+
+      - name: Run integration tests with credentials
+        run: |
+          echo "🔌 Running full integration tests with API credentials..."
+          echo "Testing permanent failure handling across all providers"
+          bun test tests/integration/
+
+      - name: Integration test summary
+        run: |
+          echo "✅ Integration tests completed with real API validation"
+          echo "🛡️ Permanent failure handling tested across all providers"
+
+  validate-docs:
+    name: Documentation Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for required files
+        run: |
+          test -f README.md || { echo "README.md missing"; exit 1; }
+          test -f LICENSE || { echo "LICENSE missing"; exit 1; }
+          test -f CONTRIBUTING.md || { echo "CONTRIBUTING.md missing"; exit 1; }
+          test -f SECURITY.md || { echo "SECURITY.md missing"; exit 1; }
+
+      - name: Validate Markdown
+        uses: DavidAnson/markdownlint-action@v3
+        with:
+          files: '**/*.md'
+          ignore: 'node_modules'
+          config: |
+            {
+              "MD013": false,
+              "MD033": false,
+              "MD041": false
+            }
+

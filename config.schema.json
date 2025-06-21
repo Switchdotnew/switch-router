@@ -1,0 +1,1077 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/Vepler/switch/schemas/config.json",
+  "title": "Switch Configuration Schema",
+  "description": "Complete configuration schema for Switch LLM routing service",
+  "type": "object",
+  "properties": {
+    "credentialStores": {
+      "description": "Credential store configurations for authentication",
+      "oneOf": [
+        {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "$ref": "#/definitions/CredentialStore"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CredentialStore"
+          }
+        }
+      ]
+    },
+    "pools": {
+      "description": "Pool definitions for provider grouping and routing",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/PoolDefinition"
+      },
+      "minItems": 1
+    },
+    "models": {
+      "description": "Model to pool mappings",
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/definitions/ModelConfig"
+        }
+      },
+      "additionalProperties": false
+    },
+    "server": {
+      "$ref": "#/definitions/ServerConfig"
+    },
+    "log": {
+      "$ref": "#/definitions/LogConfig"
+    },
+    "routing": {
+      "$ref": "#/definitions/RoutingConfig"
+    },
+    "timeout": {
+      "$ref": "#/definitions/TimeoutConfig"
+    },
+    "performance": {
+      "$ref": "#/definitions/PerformanceConfig"
+    }
+  },
+  "required": ["pools"],
+  "additionalProperties": false,
+  
+  "definitions": {
+    "CredentialStore": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Optional numeric ID for array-based configuration"
+        },
+        "name": {
+          "type": "string",
+          "description": "Optional name for identification"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["simple", "aws", "google", "azure", "oauth"],
+          "description": "Type of credential store"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["env", "file", "vault", "aws-secrets", "inline"],
+          "description": "Source of credential data"
+        },
+        "config": {
+          "description": "Type-specific configuration",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/SimpleCredentialConfig"
+            },
+            {
+              "$ref": "#/definitions/AWSCredentialConfig"
+            },
+            {
+              "$ref": "#/definitions/GoogleCredentialConfig"
+            },
+            {
+              "$ref": "#/definitions/AzureCredentialConfig"
+            },
+            {
+              "$ref": "#/definitions/OAuthCredentialConfig"
+            }
+          ]
+        },
+        "cacheTtl": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Cache time-to-live in seconds"
+        },
+        "rotation": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "intervalHours": {
+              "type": "number",
+              "minimum": 1
+            },
+            "beforeExpiryHours": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": ["enabled", "intervalHours", "beforeExpiryHours"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["type", "source", "config"],
+      "additionalProperties": false
+    },
+
+    "SimpleCredentialConfig": {
+      "type": "object",
+      "properties": {
+        "apiKeyVar": {
+          "type": "string",
+          "description": "Environment variable containing API key"
+        },
+        "apiKey": {
+          "type": "string",
+          "description": "Direct API key value (not recommended for production)"
+        }
+      },
+      "oneOf": [
+        { "required": ["apiKeyVar"] },
+        { "required": ["apiKey"] }
+      ],
+      "additionalProperties": false
+    },
+
+    "AWSCredentialConfig": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "type": "string"
+        },
+        "regionVar": {
+          "type": "string"
+        },
+        "accessKeyId": {
+          "type": "string"
+        },
+        "accessKeyIdVar": {
+          "type": "string"
+        },
+        "secretAccessKey": {
+          "type": "string"
+        },
+        "secretAccessKeyVar": {
+          "type": "string"
+        },
+        "sessionToken": {
+          "type": "string"
+        },
+        "sessionTokenVar": {
+          "type": "string"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "profileVar": {
+          "type": "string"
+        },
+        "useInstanceProfile": {
+          "type": "boolean"
+        },
+        "useWebIdentity": {
+          "type": "boolean"
+        }
+      },
+      "anyOf": [
+        { "required": ["regionVar"] },
+        { "required": ["region"] }
+      ],
+      "additionalProperties": false
+    },
+
+    "GoogleCredentialConfig": {
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "type": "string"
+        },
+        "projectIdVar": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "regionVar": {
+          "type": "string"
+        },
+        "serviceAccountKey": {
+          "type": "string"
+        },
+        "serviceAccountKeyVar": {
+          "type": "string"
+        },
+        "serviceAccountKeyFile": {
+          "type": "string"
+        },
+        "useADC": {
+          "type": "boolean",
+          "description": "Use Application Default Credentials"
+        }
+      },
+      "anyOf": [
+        { "required": ["projectIdVar"] },
+        { "required": ["projectId"] }
+      ],
+      "additionalProperties": false
+    },
+
+    "AzureCredentialConfig": {
+      "type": "object",
+      "properties": {
+        "subscriptionId": {
+          "type": "string"
+        },
+        "subscriptionIdVar": {
+          "type": "string"
+        },
+        "resourceGroup": {
+          "type": "string"
+        },
+        "resourceGroupVar": {
+          "type": "string"
+        },
+        "tenantId": {
+          "type": "string"
+        },
+        "tenantIdVar": {
+          "type": "string"
+        },
+        "clientId": {
+          "type": "string"
+        },
+        "clientIdVar": {
+          "type": "string"
+        },
+        "clientSecret": {
+          "type": "string"
+        },
+        "clientSecretVar": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "endpointVar": {
+          "type": "string"
+        },
+        "useManagedIdentity": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "OAuthCredentialConfig": {
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "type": "string"
+        },
+        "clientIdVar": {
+          "type": "string"
+        },
+        "clientSecret": {
+          "type": "string"
+        },
+        "clientSecretVar": {
+          "type": "string"
+        },
+        "tokenEndpoint": {
+          "type": "string",
+          "format": "uri"
+        },
+        "refreshToken": {
+          "type": "string"
+        },
+        "refreshTokenVar": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["tokenEndpoint"],
+      "additionalProperties": false
+    },
+
+    "PoolDefinition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Unique pool identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable pool name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional pool description"
+        },
+        "providers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProviderConfig"
+          },
+          "minItems": 1,
+          "description": "Array of providers in this pool"
+        },
+        "fallbackPoolIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Pool IDs to fallback to when this pool is unhealthy"
+        },
+        "routingStrategy": {
+          "type": "string",
+          "enum": ["weighted", "cost_optimized", "fastest_response", "round_robin", "least_connections"],
+          "default": "fastest_response",
+          "description": "Strategy for selecting providers within this pool"
+        },
+        "circuitBreaker": {
+          "$ref": "#/definitions/CircuitBreakerConfig"
+        },
+        "weightedRouting": {
+          "type": "object",
+          "properties": {
+            "autoAdjust": {
+              "type": "boolean",
+              "default": false
+            },
+            "minWeight": {
+              "type": "number",
+              "minimum": 0,
+              "default": 1
+            },
+            "maxWeight": {
+              "type": "number",
+              "minimum": 1,
+              "default": 100
+            }
+          },
+          "additionalProperties": false
+        },
+        "costOptimization": {
+          "type": "object",
+          "properties": {
+            "maxCostPerToken": {
+              "type": "number",
+              "minimum": 0
+            },
+            "prioritizeCost": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": ["maxCostPerToken", "prioritizeCost"],
+          "additionalProperties": false
+        },
+        "healthThresholds": {
+          "type": "object",
+          "properties": {
+            "errorRate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 20,
+              "description": "Maximum acceptable error rate percentage"
+            },
+            "responseTime": {
+              "type": "number",
+              "minimum": 0,
+              "default": 30000,
+              "description": "Maximum acceptable response time in milliseconds"
+            },
+            "consecutiveFailures": {
+              "type": "number",
+              "minimum": 1,
+              "default": 3,
+              "description": "Maximum consecutive failures before marking unhealthy"
+            },
+            "minHealthyProviders": {
+              "type": "number",
+              "minimum": 1,
+              "default": 1,
+              "description": "Minimum number of healthy providers required"
+            }
+          },
+          "required": ["errorRate", "responseTime", "consecutiveFailures", "minHealthyProviders"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["id", "name", "providers", "circuitBreaker", "healthThresholds"],
+      "additionalProperties": false
+    },
+
+    "ProviderConfig": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Provider name within the pool"
+        },
+        "provider": {
+          "type": "string",
+          "enum": ["openai", "anthropic", "bedrock", "together", "runpod", "alibaba", "custom", "azure", "vertex"],
+          "description": "Provider type"
+        },
+        "credentialsRef": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "number" }
+          ],
+          "description": "Reference to credential store"
+        },
+        "apiBase": {
+          "type": "string",
+          "format": "uri",
+          "description": "Base API URL"
+        },
+        "modelName": {
+          "type": "string",
+          "description": "Model name as expected by the provider"
+        },
+        "priority": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Provider priority (1 = highest)"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 1,
+          "default": 1,
+          "description": "Weight for load balancing"
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1000,
+          "default": 30000,
+          "description": "Request timeout in milliseconds"
+        },
+        "maxRetries": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 3,
+          "description": "Maximum retry attempts"
+        },
+        "retryDelay": {
+          "type": "number",
+          "minimum": 100,
+          "default": 1000,
+          "description": "Delay between retries in milliseconds"
+        },
+        "headers": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Custom HTTP headers"
+        },
+        "rateLimits": {
+          "type": "object",
+          "properties": {
+            "requestsPerMinute": {
+              "type": "number",
+              "minimum": 1
+            },
+            "tokensPerMinute": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "providerParams": {
+          "type": "object",
+          "description": "Provider-specific parameters"
+        },
+        "healthCheck": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "intervalMs": {
+              "type": "number",
+              "minimum": 5000,
+              "default": 30000
+            },
+            "timeoutMs": {
+              "type": "number",
+              "minimum": 1000,
+              "default": 5000
+            },
+            "retries": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5,
+              "default": 3
+            }
+          },
+          "additionalProperties": false
+        },
+        "healthCheckParams": {
+          "type": "object",
+          "description": "Parameters used for health checks"
+        },
+        "streamingParams": {
+          "type": "object",
+          "description": "Parameters used for streaming requests"
+        },
+        "useModelDefaults": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to use model-specific default parameters"
+        },
+        "costPerToken": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Cost per token for optimization"
+        }
+      },
+      "required": ["name", "provider", "credentialsRef", "apiBase", "modelName", "priority"],
+      "additionalProperties": false
+    },
+
+    "CircuitBreakerConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "failureThreshold": {
+          "type": "number",
+          "minimum": 1,
+          "default": 5,
+          "description": "Number of failures before opening circuit"
+        },
+        "resetTimeout": {
+          "type": "number",
+          "minimum": 1000,
+          "default": 60000,
+          "description": "Time before attempting recovery (ms)"
+        },
+        "monitoringWindow": {
+          "type": "number",
+          "minimum": 60000,
+          "default": 300000,
+          "description": "Window for tracking failures (ms)"
+        },
+        "minRequestsThreshold": {
+          "type": "number",
+          "minimum": 1,
+          "default": 10,
+          "description": "Minimum requests before evaluation"
+        },
+        "errorThresholdPercentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 50,
+          "description": "Error rate percentage threshold"
+        },
+        "permanentFailureHandling": {
+          "$ref": "#/definitions/PermanentFailureConfig"
+        }
+      },
+      "required": ["enabled"],
+      "additionalProperties": false
+    },
+
+    "PermanentFailureConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "timeoutMultiplier": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 5
+        },
+        "baseTimeoutMs": {
+          "type": "number",
+          "minimum": 60000,
+          "default": 300000,
+          "description": "Base timeout for permanent failures (minimum 1 minute)"
+        },
+        "maxBackoffMultiplier": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 4,
+          "description": "Maximum exponential backoff multiplier"
+        },
+        "errorPatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "404.*not found",
+            "401.*unauthorized",
+            "403.*forbidden",
+            "authentication.*failed",
+            "invalid.*credentials",
+            "api.*key.*invalid",
+            "endpoint.*not.*found"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "ModelConfig": {
+      "type": "object",
+      "properties": {
+        "primaryPoolId": {
+          "type": "string",
+          "description": "ID of the primary pool for this model"
+        },
+        "defaultParameters": {
+          "type": "object",
+          "properties": {
+            "temperature": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2
+            },
+            "maxTokens": {
+              "type": "number",
+              "minimum": 1
+            },
+            "topP": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "frequencyPenalty": {
+              "type": "number",
+              "minimum": -2,
+              "maximum": 2
+            },
+            "presencePenalty": {
+              "type": "number",
+              "minimum": -2,
+              "maximum": 2
+            },
+            "stop": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["primaryPoolId"],
+      "additionalProperties": false
+    },
+
+    "ServerConfig": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 65535,
+          "default": 3000
+        },
+        "hostname": {
+          "type": "string",
+          "default": "localhost"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "LogConfig": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["debug", "info", "warn", "error"],
+          "default": "info"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "RoutingConfig": {
+      "type": "object",
+      "properties": {
+        "enableFallback": {
+          "type": "boolean",
+          "default": true
+        },
+        "healthCheckInterval": {
+          "type": "number",
+          "minimum": 5000,
+          "default": 30000
+        },
+        "permanentFailureHandling": {
+          "$ref": "#/definitions/PermanentFailureConfig"
+        },
+        "healthCheck": {
+          "$ref": "#/definitions/HealthCheckConfig"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "HealthCheckConfig": {
+      "type": "object",
+      "properties": {
+        "maxConcurrentChecks": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        },
+        "defaultTimeoutMs": {
+          "type": "number",
+          "minimum": 1000,
+          "maximum": 30000,
+          "default": 5000
+        },
+        "primaryProviderIntervalMs": {
+          "type": "number",
+          "minimum": 5000,
+          "maximum": 300000,
+          "default": 30000
+        },
+        "fallbackProviderIntervalMs": {
+          "type": "number",
+          "minimum": 10000,
+          "maximum": 600000,
+          "default": 45000
+        },
+        "failedProviderIntervalMs": {
+          "type": "number",
+          "minimum": 5000,
+          "maximum": 60000,
+          "default": 15000
+        },
+        "maxRetries": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 3
+        },
+        "retryDelayMs": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 10000,
+          "default": 1000
+        },
+        "enablePrioritization": {
+          "type": "boolean",
+          "default": true
+        },
+        "enableAdaptiveIntervals": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "TimeoutConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "defaultTimeoutMs": {
+          "type": "number",
+          "minimum": 1000,
+          "maximum": 600000,
+          "default": 60000
+        },
+        "maxTimeoutMs": {
+          "type": "number",
+          "minimum": 5000,
+          "maximum": 1800000,
+          "default": 300000
+        },
+        "minTimeoutMs": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 30000,
+          "default": 1000
+        },
+        "includeTimeoutHeaders": {
+          "type": "boolean",
+          "default": true
+        },
+        "endpointTimeouts": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_/-]+$": {
+              "type": "number",
+              "minimum": 1000
+            }
+          },
+          "additionalProperties": false
+        },
+        "credentialResolutionTimeoutMs": {
+          "type": "number",
+          "minimum": 1000,
+          "maximum": 60000,
+          "default": 10000
+        },
+        "providerTimeoutMultiplier": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 2.0,
+          "default": 0.8
+        },
+        "streamingTimeoutMs": {
+          "type": "number",
+          "minimum": 10000,
+          "maximum": 1800000,
+          "default": 600000
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "PerformanceConfig": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["standard", "high_throughput"],
+          "default": "standard"
+        },
+        "disable_debug_logging": {
+          "type": "boolean",
+          "default": false
+        },
+        "disable_metrics": {
+          "type": "boolean",
+          "default": false
+        },
+        "cache_duration_ms": {
+          "type": "number",
+          "minimum": 1000,
+          "default": 10000
+        },
+        "lightweight_validation": {
+          "type": "boolean",
+          "default": false
+        },
+        "disable_pretty_logging": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_concurrent_requests": {
+          "type": "number",
+          "minimum": 1,
+          "default": 50
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+
+  "examples": [
+    {
+      "title": "Basic Single Provider Configuration",
+      "credentialStores": {
+        "openai": {
+          "type": "simple",
+          "source": "env",
+          "config": {
+            "apiKeyVar": "OPENAI_API_KEY"
+          },
+          "cacheTtl": 3600
+        }
+      },
+      "pools": [
+        {
+          "id": "openai-pool",
+          "name": "OpenAI Pool",
+          "providers": [
+            {
+              "name": "openai-gpt4o",
+              "provider": "openai",
+              "credentialsRef": "openai",
+              "apiBase": "https://api.openai.com/v1",
+              "modelName": "gpt-4o",
+              "priority": 1
+            }
+          ],
+          "fallbackPoolIds": [],
+          "routingStrategy": "fastest_response",
+          "circuitBreaker": {
+            "enabled": true,
+            "failureThreshold": 3,
+            "resetTimeout": 60000
+          },
+          "healthThresholds": {
+            "errorRate": 20,
+            "responseTime": 30000,
+            "consecutiveFailures": 3,
+            "minHealthyProviders": 1
+          }
+        }
+      ],
+      "models": {
+        "gpt-4o": {
+          "primaryPoolId": "openai-pool",
+          "defaultParameters": {
+            "temperature": 0.7,
+            "maxTokens": 4096
+          }
+        }
+      }
+    },
+    {
+      "title": "Multi-Provider with Fallback Configuration",
+      "credentialStores": {
+        "openai": {
+          "type": "simple",
+          "source": "env",
+          "config": {
+            "apiKeyVar": "OPENAI_API_KEY"
+          }
+        },
+        "anthropic": {
+          "type": "simple",
+          "source": "env",
+          "config": {
+            "apiKeyVar": "ANTHROPIC_API_KEY"
+          }
+        },
+        "aws": {
+          "type": "aws",
+          "source": "env",
+          "config": {
+            "regionVar": "AWS_REGION",
+            "accessKeyIdVar": "AWS_ACCESS_KEY_ID",
+            "secretAccessKeyVar": "AWS_SECRET_ACCESS_KEY"
+          }
+        }
+      },
+      "pools": [
+        {
+          "id": "high-quality-pool",
+          "name": "High Quality Models",
+          "providers": [
+            {
+              "name": "openai-gpt4o",
+              "provider": "openai",
+              "credentialsRef": "openai",
+              "apiBase": "https://api.openai.com/v1",
+              "modelName": "gpt-4o",
+              "priority": 1,
+              "weight": 70
+            },
+            {
+              "name": "claude-sonnet",
+              "provider": "anthropic",
+              "credentialsRef": "anthropic",
+              "apiBase": "https://api.anthropic.com",
+              "modelName": "claude-3-5-sonnet-20241022",
+              "priority": 1,
+              "weight": 30
+            }
+          ],
+          "fallbackPoolIds": ["bedrock-fallback-pool"],
+          "routingStrategy": "weighted",
+          "circuitBreaker": {
+            "enabled": true,
+            "failureThreshold": 5,
+            "resetTimeout": 120000,
+            "permanentFailureHandling": {
+              "enabled": true,
+              "timeoutMultiplier": 5,
+              "baseTimeoutMs": 300000
+            }
+          },
+          "healthThresholds": {
+            "errorRate": 15,
+            "responseTime": 35000,
+            "consecutiveFailures": 2,
+            "minHealthyProviders": 1
+          }
+        },
+        {
+          "id": "bedrock-fallback-pool",
+          "name": "AWS Bedrock Fallback",
+          "providers": [
+            {
+              "name": "bedrock-claude",
+              "provider": "bedrock",
+              "credentialsRef": "aws",
+              "apiBase": "https://bedrock-runtime.us-east-1.amazonaws.com",
+              "modelName": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+              "priority": 1
+            }
+          ],
+          "fallbackPoolIds": [],
+          "routingStrategy": "fastest_response",
+          "circuitBreaker": {
+            "enabled": true,
+            "failureThreshold": 3,
+            "resetTimeout": 60000
+          },
+          "healthThresholds": {
+            "errorRate": 25,
+            "responseTime": 45000,
+            "consecutiveFailures": 3,
+            "minHealthyProviders": 1
+          }
+        }
+      ],
+      "models": {
+        "smart-model": {
+          "primaryPoolId": "high-quality-pool",
+          "defaultParameters": {
+            "temperature": 0.3,
+            "maxTokens": 8192
+          }
+        }
+      }
+    }
+  ]
+}

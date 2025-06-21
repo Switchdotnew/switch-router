@@ -1,0 +1,340 @@
+{
+  "credentialStores": {
+    "openai-api": {
+      "type": "simple",
+      "source": "env",
+      "config": {
+        "apiKeyVar": "OPENAI_API_KEY"
+      },
+      "cacheTtl": 3600
+    },
+    "anthropic-api": {
+      "type": "simple",
+      "source": "env",
+      "config": {
+        "apiKeyVar": "ANTHROPIC_API_KEY"
+      },
+      "cacheTtl": 3600
+    },
+    "together-api": {
+      "type": "simple",
+      "source": "env",
+      "config": {
+        "apiKeyVar": "TOGETHER_API_KEY"
+      },
+      "cacheTtl": 3600
+    },
+    "groq-api": {
+      "type": "simple",
+      "source": "env",
+      "config": {
+        "apiKeyVar": "GROQ_API_KEY"
+      },
+      "cacheTtl": 3600
+    }
+  },
+  "models": {
+    "gpt-4o": {
+      "name": "gpt-4o",
+      "description": "GPT-4 Omni model for high-quality reasoning",
+      "providers": [
+        {
+          "name": "openai-primary",
+          "provider": "openai",
+          "credentialsRef": "openai-api",
+          "apiBase": "https://api.openai.com/v1",
+          "modelName": "gpt-4o",
+          "priority": 1,
+          "weight": 100,
+          "timeout": 30000,
+          "maxRetries": 3,
+          "retryDelay": 1000
+        }
+      ],
+      "defaultParameters": {
+        "temperature": 0.7,
+        "maxTokens": 4096
+      },
+      "circuitBreaker": {
+        "enabled": true,
+        "failureThreshold": 3,
+        "resetTimeout": 60000,
+        "monitoringWindow": 300000,
+        "minRequestsThreshold": 5,
+        "errorThresholdPercentage": 30
+      }
+    },
+    "claude-3-5-sonnet": {
+      "name": "claude-3-5-sonnet",
+      "description": "Claude 3.5 Sonnet for advanced reasoning",
+      "providers": [
+        {
+          "name": "anthropic-primary",
+          "provider": "anthropic",
+          "credentialsRef": "anthropic-api",
+          "apiBase": "https://api.anthropic.com",
+          "modelName": "claude-3-5-sonnet-20241022",
+          "priority": 1,
+          "weight": 100,
+          "timeout": 30000,
+          "maxRetries": 3,
+          "retryDelay": 1000
+        }
+      ],
+      "defaultParameters": {
+        "temperature": 0.3,
+        "maxTokens": 8192
+      },
+      "circuitBreaker": {
+        "enabled": true,
+        "failureThreshold": 2,
+        "resetTimeout": 45000,
+        "monitoringWindow": 240000,
+        "minRequestsThreshold": 3,
+        "errorThresholdPercentage": 25
+      }
+    },
+    "llama-3.1-70b": {
+      "name": "llama-3.1-70b",
+      "description": "Llama 3.1 70B for efficient performance",
+      "providers": [
+        {
+          "name": "together-primary",
+          "provider": "openai",
+          "credentialsRef": "together-api",
+          "apiBase": "https://api.together.xyz/v1",
+          "modelName": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+          "priority": 1,
+          "weight": 100,
+          "timeout": 30000,
+          "maxRetries": 3,
+          "retryDelay": 1000
+        },
+        {
+          "name": "groq-fallback",
+          "provider": "openai",
+          "credentialsRef": "groq-api",
+          "apiBase": "https://api.groq.com/openai/v1",
+          "modelName": "llama-3.1-70b-versatile",
+          "priority": 2,
+          "weight": 80,
+          "timeout": 20000,
+          "maxRetries": 3,
+          "retryDelay": 1000
+        }
+      ],
+      "defaultParameters": {
+        "temperature": 0.7,
+        "maxTokens": 8192
+      },
+      "circuitBreaker": {
+        "enabled": true,
+        "failureThreshold": 3,
+        "resetTimeout": 60000,
+        "monitoringWindow": 300000,
+        "minRequestsThreshold": 5,
+        "errorThresholdPercentage": 30
+      }
+    },
+    "llama-3.1-8b": {
+      "name": "llama-3.1-8b",
+      "description": "Llama 3.1 8B for fast responses",
+      "providers": [
+        {
+          "name": "groq-primary",
+          "provider": "openai",
+          "credentialsRef": "groq-api",
+          "apiBase": "https://api.groq.com/openai/v1",
+          "modelName": "llama-3.1-8b-instant",
+          "priority": 1,
+          "weight": 100,
+          "timeout": 15000,
+          "maxRetries": 3,
+          "retryDelay": 500
+        }
+      ],
+      "defaultParameters": {
+        "temperature": 0.8,
+        "maxTokens": 4096
+      },
+      "circuitBreaker": {
+        "enabled": true,
+        "failureThreshold": 4,
+        "resetTimeout": 30000,
+        "monitoringWindow": 180000,
+        "minRequestsThreshold": 5,
+        "errorThresholdPercentage": 35
+      }
+    }
+  },
+  "pools": {
+    "enabled": true,
+    "defaultPool": "general-purpose",
+    "pools": {
+      "high-quality": {
+        "name": "high-quality",
+        "description": "Premium models for complex reasoning tasks",
+        "models": ["gpt-4o", "claude-3-5-sonnet"],
+        "loadBalancing": {
+          "strategy": "fastest-response",
+          "healthCheckWeight": 0.4,
+          "responseTimeWeight": 0.6
+        },
+        "failover": {
+          "enabled": true,
+          "strategy": "priority-based",
+          "maxAttempts": 2,
+          "delayMs": 1000,
+          "backoffMultiplier": 2,
+          "crossPoolFailover": true
+        },
+        "healthThresholds": {
+          "errorRate": 15,
+          "responseTime": 35000,
+          "consecutiveFailures": 2,
+          "minHealthyProviders": 1
+        },
+        "priority": 1,
+        "limits": {
+          "maxConcurrentRequests": 20,
+          "requestTimeoutMs": 45000,
+          "costLimitPerHour": 100.0
+        },
+        "monitoring": {
+          "enabled": true,
+          "metricsRetentionDays": 14,
+          "alertThresholds": {
+            "errorRate": 20,
+            "responseTime": 40000,
+            "consecutiveFailures": 3,
+            "minHealthyProviders": 1
+          }
+        }
+      },
+      "cost-efficient": {
+        "name": "cost-efficient",
+        "description": "Optimized for cost and speed",
+        "models": ["llama-3.1-70b", "llama-3.1-8b"],
+        "loadBalancing": {
+          "strategy": "cost-optimised",
+          "healthCheckWeight": 0.2,
+          "costWeight": 0.6,
+          "responseTimeWeight": 0.2
+        },
+        "failover": {
+          "enabled": true,
+          "strategy": "round-robin",
+          "maxAttempts": 3,
+          "delayMs": 500,
+          "backoffMultiplier": 1.5,
+          "crossPoolFailover": true
+        },
+        "healthThresholds": {
+          "errorRate": 25,
+          "responseTime": 20000,
+          "consecutiveFailures": 3,
+          "minHealthyProviders": 1
+        },
+        "priority": 2,
+        "limits": {
+          "maxConcurrentRequests": 50,
+          "requestTimeoutMs": 30000,
+          "costLimitPerHour": 25.0
+        },
+        "monitoring": {
+          "enabled": true,
+          "metricsRetentionDays": 7,
+          "alertThresholds": {
+            "errorRate": 30,
+            "responseTime": 25000,
+            "consecutiveFailures": 4,
+            "minHealthyProviders": 1
+          }
+        }
+      },
+      "general-purpose": {
+        "name": "general-purpose",
+        "description": "Balanced performance for general use",
+        "models": ["llama-3.1-70b", "claude-3-5-sonnet"],
+        "loadBalancing": {
+          "strategy": "weighted",
+          "healthCheckWeight": 0.3,
+          "responseTimeWeight": 0.4,
+          "costWeight": 0.3
+        },
+        "failover": {
+          "enabled": true,
+          "strategy": "priority-based",
+          "maxAttempts": 3,
+          "delayMs": 750,
+          "backoffMultiplier": 2,
+          "crossPoolFailover": true
+        },
+        "healthThresholds": {
+          "errorRate": 20,
+          "responseTime": 30000,
+          "consecutiveFailures": 3,
+          "minHealthyProviders": 1
+        },
+        "priority": 3,
+        "limits": {
+          "maxConcurrentRequests": 30,
+          "requestTimeoutMs": 35000,
+          "costLimitPerHour": 50.0
+        },
+        "monitoring": {
+          "enabled": true,
+          "metricsRetentionDays": 10,
+          "alertThresholds": {
+            "errorRate": 25,
+            "responseTime": 35000,
+            "consecutiveFailures": 4,
+            "minHealthyProviders": 1
+          }
+        }
+      }
+    },
+    "assignments": [
+      {
+        "model": "gpt-4o",
+        "pool": "high-quality",
+        "priority": 1
+      },
+      {
+        "model": "claude-3-5-sonnet",
+        "pool": "high-quality",
+        "priority": 2
+      },
+      {
+        "model": "claude-3-5-sonnet",
+        "pool": "general-purpose",
+        "priority": 1
+      },
+      {
+        "model": "llama-3.1-70b",
+        "pool": "cost-efficient",
+        "priority": 1
+      },
+      {
+        "model": "llama-3.1-70b",
+        "pool": "general-purpose",
+        "priority": 2
+      },
+      {
+        "model": "llama-3.1-8b",
+        "pool": "cost-efficient",
+        "priority": 2
+      }
+    ],
+    "crossPoolFailover": {
+      "enabled": true,
+      "maxAttempts": 2,
+      "strategy": "priority-based"
+    },
+    "monitoring": {
+      "globalMetricsEnabled": true,
+      "costTrackingEnabled": true,
+      "performanceOptimizationEnabled": true
+    }
+  }
+}

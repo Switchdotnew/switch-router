@@ -1,0 +1,62 @@
+# Ignore all definitions files except the example
+definitions.json
+definitions.*.json
+!definitions.example.json
+
+# Development files
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+README.md
+CONTRIBUTING.md
+SECURITY.md
+CHANGELOG.md
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+*.lcov
+.nyc_output
+
+# Build artifacts (these will be copied separately)
+dist/
+
+# Documentation
+docs/
+*.md
+!package.json
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.circleci/
+
+# Postman collections (keep in source but not in Docker)
+*.postman_collection.json
+*.postman_environment.json
+
+# Doppler env file
+doppler-env-example.md
