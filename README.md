@@ -11,7 +11,7 @@
 
 - 🚀 **OpenAI-compatible API** - Drop-in replacement for `/v1/chat/completions`
 - 📛 **Named routes** - Use `smart-model` instead of `gpt-4o-really-long-model-name-v3`
-- 🔄 **Automatic fallbacks** - When OpenAI is down, Switch tries Anthropic, then AWS Bedrock
+- 🔄 **Configurable fallbacks** - Define your own fallback chains between pools and providers
 - ⚡ **Circuit breakers** - Stop hitting broken providers automatically
 - 🏊 **Pool-based routing** - Group providers for sophisticated load balancing
 - 🌐 **Multi-provider support** - OpenAI, Anthropic, AWS Bedrock, Together AI, RunPod, custom APIs
@@ -43,14 +43,14 @@ curl -X POST http://localhost:3000/v1/chat/completions \
   -d '{"model": "smart-model", "messages": [...]}'
 
 # Switch routes it to the right provider based on your config
-# OpenAI > Anthropic > AWS Bedrock (automatic fallbacks)
+# (fallback chains are completely configurable)
 ```
 
 ## Key Features
 
 - **OpenAI-compatible API** - Drop-in replacement for `/v1/chat/completions`
 - **Named routes** - Use `smart-model` instead of `gpt-4o-really-long-model-name-v3`
-- **Automatic fallbacks** - When OpenAI is down, Switch tries Anthropic, then AWS Bedrock
+- **Configurable fallbacks** - Define custom fallback chains between pools and providers
 - **Circuit breakers** - Stop hitting broken providers
 - **Pool-based routing** - Group providers for sophisticated load balancing
 - **Multi-provider support** - OpenAI, Anthropic, AWS Bedrock, Together AI, RunPod, custom APIs
