@@ -124,7 +124,7 @@ export interface IPoolDefinition {
     maxWeight: number;
   };
   costOptimization?: {
-    maxCostPerToken: number;
+    maxCostPerToken?: number;
     prioritizeCost: boolean;
   };
   healthThresholds: {

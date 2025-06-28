@@ -53,7 +53,7 @@ export interface PoolDefinition {
   /** Cost optimization configuration (used when routingStrategy is 'cost_optimized') */
   costOptimization?: {
     /** Maximum cost per token threshold */
-    maxCostPerToken: number;
+    maxCostPerToken?: number;
     /** Prefer cost over performance when true */
     prioritizeCost: boolean;
   };

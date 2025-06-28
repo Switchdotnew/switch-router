@@ -167,7 +167,7 @@ export class PoolManager {
           usedFallback
         };
       } catch (error) {
-        log.warn(`Pool ${poolId} failed, trying next in chain`, { error: error.message });
+        log.warn(`Pool ${poolId} failed, trying next in chain`, { error: error instanceof Error ? error.message : String(error) });
         
         // Update pool health based on failure
         await this.updatePoolHealthOnFailure(poolId, error);

@@ -60,7 +60,7 @@ export class PoolHealthAggregator {
         healthyCount++;
         totalResponseTime += providerStatus.responseTime;
         totalErrorRate += providerStatus.errorRate;
-        totalSuccessRate += metrics?.successRate || 0;
+        totalSuccessRate += metrics ? (metrics.totalRequests > 0 ? (metrics.successfulRequests / metrics.totalRequests) * 100 : 0) : 0;
       }
 
       log.debug(`Provider ${providerConfig.name} health status`, {

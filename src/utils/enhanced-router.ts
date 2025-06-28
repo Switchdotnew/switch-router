@@ -444,14 +444,22 @@ export class EnhancedModelRouter {
     const config = getConfig();
     const timeout = config.timeout?.defaultTimeoutMs || 60000;
     
+    const startTime = Date.now();
+    const requestId = `req-${Date.now()}-${Math.random().toString(36).substring(2)}`;
+    const abortController = new AbortController();
+    
     return {
-      id: `req-${Date.now()}-${Math.random().toString(36).substring(2)}`,
-      startTime: Date.now(),
+      requestId,
+      startTime,
+      deadline: startTime + timeout,
       timeoutMs: timeout,
+      abortController,
+      signal: abortController.signal,
+      isAborted: false,
       get remainingTime() {
-        return Math.max(0, this.timeoutMs - (Date.now() - this.startTime));
+        return Math.max(0, this.deadline - Date.now());
       }
-    } as IRequestContext;
+    };
   }
 
   /**
