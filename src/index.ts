@@ -18,11 +18,11 @@ async function startServer() {
   
   log.info(`Configuration:
     - Server: ${config.server.hostname}:${config.server.port}
-    - Models: ${Object.keys(config.models.definitions).length} configured
+    - Models: ${Object.keys(config.models).length} configured
     - Default Model: ${config.models.defaultModel}
     - Log Level: ${config.log.level}`);
 
-  if (Object.keys(config.models.definitions).length === 0) {
+  if (Object.keys(config.models).length === 0) {
     log.warn(
       'Warning: No model definitions found! Server will start but no models will be available.'
     );

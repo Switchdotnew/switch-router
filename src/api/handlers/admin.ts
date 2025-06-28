@@ -1,15 +1,14 @@
 import log from '../../utils/logging.js';
 import type { Context } from 'hono';
-import { enhancedModelRouter } from '../../utils/enhanced-router.js';
+import { getRouter } from '../../utils/enhanced-router.js';
 
 export async function handleProviderStatus(c: Context) {
   try {
-    const healthStatus = enhancedModelRouter.getHealthStatus();
-    const providerSummary = enhancedModelRouter.getProviderHealthSummary();
+    const router = getRouter();
+    const healthStatus = await router.getHealthStatus();
 
     return c.json({
-      models: healthStatus,
-      providers: providerSummary,
+      status: healthStatus,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -48,7 +47,8 @@ export async function handleResetProvider(c: Context) {
       );
     }
 
-    enhancedModelRouter.resetProvider(modelName, providerName);
+    const router = getRouter();
+    router.resetProvider(modelName, providerName);
 
     log.info(`Reset provider ${providerName} for model ${modelName}`);
 

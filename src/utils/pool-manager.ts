@@ -42,7 +42,7 @@ export class PoolManager {
   private initializePools(pools: PoolDefinition[]): void {
     for (const pool of pools) {
       this.pools.set(pool.id, pool);
-      logger.info(`Initialized pool: ${pool.id} (${pool.name}) with ${pool.providers.length} providers`);
+      log.info(`Initialized pool: ${pool.id} (${pool.name}) with ${pool.providers.length} providers`);
     }
   }
 
@@ -52,7 +52,7 @@ export class PoolManager {
   private createModelMappings(models: Record<string, { primaryPoolId: string }>): void {
     for (const [modelName, config] of Object.entries(models)) {
       this.modelToPoolMapping.set(modelName, config.primaryPoolId);
-      logger.debug(`Mapped model ${modelName} to pool ${config.primaryPoolId}`);
+      log.debug(`Mapped model ${modelName} to pool ${config.primaryPoolId}`);
     }
   }
 
@@ -113,7 +113,7 @@ export class PoolManager {
    */
   private buildFallbackChain(poolId: string, visited: Set<string> = new Set()): string[] {
     if (visited.has(poolId)) {
-      logger.warn(`Circular fallback detected for pool ${poolId}`);
+      log.warn(`Circular fallback detected for pool ${poolId}`);
       return [];
     }
 
@@ -475,7 +475,7 @@ export class PoolManager {
     this.poolHealthCache.delete(poolId);
     
     // Log failure for metrics
-    logger.warn(`Pool ${poolId} failed`, { error: error.message });
+    log.warn(`Pool ${poolId} failed`, { error: error.message });
   }
 
   /**
