@@ -118,7 +118,7 @@
             }
           ],
           "cookie": [],
-          "body": "{\n  \"object\": \"list\",\n  \"data\": [\n    {\n      \"id\": \"fast-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"smart-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"reliable-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"budget-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"enterprise-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    }\n  ]\n}"
+          "body": "{\n  \"object\": \"list\",\n  \"data\": [\n    {\n      \"id\": \"fast-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"smart-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"reliable-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"budget-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    },\n    {\n      \"id\": \"production-model\",\n      \"object\": \"model\",\n      \"created\": 1640995200,\n      \"owned_by\": \"switch\"\n    }\n  ]\n}"
         }
       ]
     },

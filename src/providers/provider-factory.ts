@@ -22,7 +22,7 @@ export class ProviderFactory {
    * Create a provider adapter with credential resolution
    */
   public async createProvider(
-    config: Domains.IProviderEndpointConfig
+    config: Domains.IProviderEndpoint
   ): Promise<Domains.IBaseProvider> {
     // Resolve credentials if credentialsRef is provided
     let credential: Credential | undefined;
@@ -176,7 +176,7 @@ export class ProviderFactory {
   /**
    * Validate provider configuration
    */
-  public async validateProviderConfig(config: Domains.IProviderEndpointConfig): Promise<{
+  public async validateProviderConfig(config: Domains.IProviderEndpoint): Promise<{
     valid: boolean;
     errors: string[];
     warnings: string[];

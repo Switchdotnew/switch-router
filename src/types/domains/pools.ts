@@ -1,4 +1,4 @@
-import type { ProviderConfig, CircuitBreakerConfig } from './config.js';
+import type { ProviderConfig, CircuitBreakerConfig } from '../shared/config.js';
 
 /**
  * Pool routing strategies for provider selection within a pool

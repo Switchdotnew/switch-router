@@ -16,7 +16,7 @@
 - 🏊 **Pool-based routing** - Group providers for sophisticated load balancing
 - 🌐 **Multi-provider support** - OpenAI, Anthropic, AWS Bedrock, Together AI, RunPod, custom APIs
 - 📊 **Health monitoring** - Real-time provider health checks and metrics
-- 🔒 **Enterprise security** - API key authentication, rate limiting, CORS protection
+- 🔒 **Security** - API key authentication, rate limiting, CORS protection
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue.svg)](https://www.typescriptlang.org/)
 [![Bun](https://img.shields.io/badge/Bun-1.0+-black.svg)](https://bun.sh/)

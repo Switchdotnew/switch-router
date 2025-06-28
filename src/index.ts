@@ -12,9 +12,9 @@ import { toErrorResponse } from './types/shared/errors.js';
 import type { ICredentialStoreEntry } from './credentials/types/credential-types.js';
 
 async function startServer() {
-  // Load configuration (async to support enterprise mode)
+  // Load configuration
   log.info('Starting LLM Router...');
-  const config = await getConfig();
+  const config = getConfig();
   
   log.info(`Configuration:
     - Server: ${config.server.hostname}:${config.server.port}
@@ -145,7 +145,7 @@ async function startServer() {
     log.info(`✅ LLM Router server running on ${serverUrl}`);
     log.info(`🔗 Health check available at: ${serverUrl}/health`);
     log.info(
-      `📦 Available models: ${Object.keys(config.models.definitions).join(', ') || 'none configured'}`
+      `📦 Available models: ${Object.keys(config.models).join(', ') || 'none configured'}`
     );
     log.info('Server is ready to handle requests!');
   } catch (error) {

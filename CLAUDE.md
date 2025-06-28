@@ -15,7 +15,7 @@
 - **Naming**: lowerCamelCase for variables/functions, PascalCase for classes/interfaces
 - **Imports**: Use ES modules with .js extensions for local imports
 - **Error Handling**: Use try/catch with proper logging (via pino)
-- **Performance**: Enterprise-grade high-throughput routing with atomic operations for 1000+ TPS stability
+- **Performance**: Production-grade high-throughput routing with atomic operations for 1000+ TPS stability
 - **Validation**: Use Zod schemas for request/response validation
 
 ## Types System Architecture
@@ -154,7 +154,7 @@ LOG_LEVEL=warn
 
 ### Performance Requirements
 
-- Enterprise-grade routing decisions with atomic operations
+- Production-grade routing decisions with atomic operations
 - Production streaming with client disconnect detection and memory leak prevention
 - Optimised for high throughput in high-throughput mode (1000+ TPS stable)
 - Memory usage optimised for high concurrency with proper resource cleanup

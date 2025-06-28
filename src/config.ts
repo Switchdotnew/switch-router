@@ -175,68 +175,12 @@ function generateTestCredentialStores(): Record<string, unknown> {
   return credentialStores;
 }
 
-/**
- * Load configuration from Redis in enterprise mode
- */
-async function loadRemoteConfig(): Promise<{
+function loadConfigurationData(): {
   pools: any[];
   models: Record<string, any>;
   credentialStores?: Record<string, unknown>;
-}> {
-  try {
-    // Dynamic import to avoid loading Redis dependencies in local mode
-    const { initializeEnterpriseFeatures } = await import('./enterprise/index.js');
-    
-    log.info('Loading configuration from Redis...');
-    const { configSync } = await initializeEnterpriseFeatures();
-    
-    if (!configSync) {
-      throw new Error('Failed to initialize configuration sync');
-    }
-
-    const remoteConfig = configSync.getCurrentConfigVersion();
-    if (!remoteConfig) {
-      throw new Error('No configuration version available from Redis');
-    }
-
-    // For now, we'll need to fetch the actual config again
-    // In the real implementation, we'd store the parsed config
-    // This is a placeholder - the actual config conversion will be implemented in Phase 2
-    log.warn('Remote config loading is stubbed - using fallback to local config');
-    throw new Error('Remote config implementation incomplete - falling back to local');
-    
-  } catch (error) {
-    log.error('Failed to load remote configuration:', error);
-    throw error;
-  }
-}
-
-async function loadConfigurationData(): Promise<{
-  pools: any[];
-  models: Record<string, any>;
-  credentialStores?: Record<string, unknown>;
-}> {
-  // Check if enterprise mode is enabled
-  try {
-    // Dynamic import to detect enterprise mode without loading dependencies
-    const { isEnterpriseMode, logModeStatus } = await import('./enterprise/utils/feature-detection.js');
-    
-    // Log current mode
-    logModeStatus();
-    
-    if (isEnterpriseMode()) {
-      try {
-        return await loadRemoteConfig();
-      } catch (error) {
-        log.warn('Remote config failed, falling back to local mode:', error);
-        return loadLocalConfigurationData();
-      }
-    }
-  } catch (importError) {
-    // Enterprise module not available or failed to import
-    log.debug('Enterprise features not available, using local mode');
-  }
-  
+} {
+  log.info('🏠 Local mode enabled - Standalone operation');
   return loadLocalConfigurationData();
 }
 
@@ -340,8 +284,8 @@ function loadLocalConfigurationData(): {
   }
 }
 
-async function loadConfig(): Promise<Config> {
-  const configData = await loadConfigurationData();
+function loadConfig(): Config {
+  const configData = loadConfigurationData();
 
   // Check if we have any pool configuration
   if (configData.pools.length === 0) {
@@ -403,20 +347,13 @@ async function loadConfig(): Promise<Config> {
   return configSchema.parse(rawConfig);
 }
 
-// Initialize config asynchronously
-let configPromise: Promise<Config> | null = null;
+// Initialize config synchronously
 let configInstance: Config | null = null;
 
-export async function getConfig(): Promise<Config> {
-  if (configInstance) {
-    return configInstance;
+export function getConfig(): Config {
+  if (!configInstance) {
+    configInstance = loadConfig();
   }
-  
-  if (!configPromise) {
-    configPromise = loadConfig();
-  }
-  
-  configInstance = await configPromise;
   return configInstance;
 }
 

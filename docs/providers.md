@@ -780,7 +780,7 @@ ALIBABA_API_KEY=sk-your-alibaba-key
 
 ### AWS Bedrock
 - 50+ models from multiple providers
-- Good for enterprise compliance
+- Good for compliance requirements
 - Regional availability varies
 - Supports multiple authentication methods
 

@@ -506,7 +506,7 @@ Simple, single-provider configuration:
 
 ### Production Setup with Multiple Fallbacks
 
-Enterprise configuration with fallback chains:
+Production configuration with fallback chains:
 
 ```json
 {

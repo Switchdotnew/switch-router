@@ -58,7 +58,7 @@ export interface ISecurityConfig {
   };
 }
 
-export interface IProviderConfig {
+export interface IDomainProviderConfig {
   name: string;
   provider:
     | 'openai'
@@ -114,7 +114,7 @@ export interface IPoolDefinition {
   id: string;
   name: string;
   description?: string;
-  providers: IProviderConfig[];
+  providers: IDomainProviderConfig[];
   fallbackPoolIds: string[];
   routingStrategy: 'weighted' | 'cost_optimized' | 'fastest_response' | 'round_robin' | 'least_connections';
   circuitBreaker: ICircuitBreakerConfig;
