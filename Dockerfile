@@ -1,7 +1,11 @@
-FROM oven/bun:1.1.38-alpine AS base
+FROM oven/bun:latest-alpine AS base
 
 # Set production environment
 ENV NODE_ENV=production
+
+# Update Alpine packages to fix CVEs
+RUN apk update && apk upgrade && \
+    apk add --no-cache musl>=1.2.5-r1 openssl>=3.3.3-r0
 
 WORKDIR /app
 
@@ -17,13 +21,14 @@ COPY tsconfig.json ./
 RUN bun run build
 
 # Production stage
-FROM oven/bun:1.1.38-alpine AS production
+FROM oven/bun:latest-alpine AS production
 
 # Set production environment
 ENV NODE_ENV=production
 
-# Install curl for health checks
-RUN apk add --no-cache curl
+# Update Alpine packages to fix CVEs and install curl for health checks
+RUN apk update && apk upgrade && \
+    apk add --no-cache musl>=1.2.5-r1 openssl>=3.3.3-r0 curl
 
 WORKDIR /app
 
