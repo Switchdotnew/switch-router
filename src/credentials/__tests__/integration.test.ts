@@ -3,6 +3,7 @@
 import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
 import { CredentialManager } from '../managers/credential-manager.js';
 import { ProviderFactory } from '../../providers/provider-factory.js';
+import { getConfig } from '../../config.js';
 import type { ICredentialStoresConfig } from '../managers/credential-manager.js';
 import type { IProviderEndpointConfig } from '../../types/domains/config.js';
 
@@ -11,15 +12,18 @@ describe('Credential System Integration', () => {
   let providerFactory: ProviderFactory;
 
   beforeEach(async () => {
-    credentialManager = new CredentialManager();
-    providerFactory = new ProviderFactory(credentialManager);
-
     // Set test environment variables
     process.env.TEST_OPENAI_API_KEY = 'sk-test1234567890abcdef';
     process.env.TEST_ANTHROPIC_API_KEY = 'sk-ant-test1234567890abcdef';
     process.env.TEST_AWS_REGION = 'us-east-1';
     process.env.TEST_AWS_ACCESS_KEY_ID = 'AKIA1234567890ABCDEF';
     process.env.TEST_AWS_SECRET_ACCESS_KEY = '1234567890abcdef1234567890abcdef12345678';
+    
+    // Initialize config before creating credential manager
+    await getConfig();
+    
+    credentialManager = new CredentialManager();
+    providerFactory = new ProviderFactory(credentialManager);
   });
 
   afterEach(async () => {
