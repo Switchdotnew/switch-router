@@ -2,7 +2,6 @@
 
 // Simple test script to verify pool configuration loading
 import { existsSync } from 'fs';
-import { join } from 'path';
 
 console.log('Testing pool-based routing integration...');
 

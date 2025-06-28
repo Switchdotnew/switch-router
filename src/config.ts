@@ -1,5 +1,4 @@
 import { configSchema, type Config } from './types/shared/config.js';
-import type { Domains } from './types/index.js';
 import type { ICredentialStoreConfig } from './types/domains/credential.js';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';

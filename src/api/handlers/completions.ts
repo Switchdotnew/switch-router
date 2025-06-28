@@ -57,7 +57,7 @@ export async function handleCompletion(c: Context) {
     try {
       const { result: response, usedProvider, usedPool } = await router.executeWithPools(
         parsedRequest.model,
-        async (client, providerId, poolContext) => {
+        async (client, _providerId, _poolContext) => {
           return await client.chatCompletion(chatRequest, requestContext);
         },
         requestContext

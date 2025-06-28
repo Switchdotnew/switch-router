@@ -118,7 +118,7 @@ export class PoolHealthAggregator {
     healthyCount: number,
     averageResponseTime: number,
     averageErrorRate: number,
-    averageSuccessRate: number
+    _averageSuccessRate: number
   ): number {
     let score = 100;
 

@@ -149,7 +149,7 @@ export class PoolManager {
     let usedFallback = false;
     const poolsAttempted: string[] = [];
 
-    const startTime = Date.now();
+    const _startTime = Date.now();
 
     for (let i = 0; i < poolChain.length; i++) {
       const poolId = poolChain[i];
@@ -484,7 +484,7 @@ export class PoolManager {
   private async updatePoolMetricsOnSuccess(
     poolId: string, 
     providerName: string, 
-    context: PoolRoutingContext
+    _context: PoolRoutingContext
   ): Promise<void> {
     const metrics = this.poolMetrics.get(poolId) || this.initializePoolMetrics(poolId);
     
