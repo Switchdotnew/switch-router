@@ -1,20 +1,21 @@
 import log from '../../utils/logging.js';
 import type { Context } from 'hono';
-import { enhancedModelRouter } from '../../utils/enhanced-router.js';
+import { getRouter } from '../../utils/enhanced-router.js';
 import type { ModelsResponse } from '../../types/public/responses/models.js';
 
 export async function handleGetModels(c: Context) {
   try {
-    const availableModels = enhancedModelRouter.getAllModels();
+    const router = getRouter();
+    const availableModels = router.getSupportedModels();
 
     const response: ModelsResponse = {
       object: 'list',
-      data: availableModels.map((model) => ({
-        id: model.name,
+      data: availableModels.map((modelName) => ({
+        id: modelName,
         object: 'model' as const,
         created: Math.floor(Date.now() / 1000),
-        owned_by: model.providers?.[0]?.provider || 'unknown',
-        root: model.name,
+        owned_by: 'pool-based',
+        root: modelName,
         permission: [],
       })),
     };
