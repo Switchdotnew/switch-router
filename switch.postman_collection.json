@@ -28,12 +28,12 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:3000",
+      "value": "http://localhost:8000",
       "type": "string"
     },
     {
       "key": "API_KEY",
-      "value": "your-api-key-here",
+      "value": "test-key-123",
       "type": "string"
     }
   ],
@@ -134,7 +134,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"model\": \"fast-model\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello, how are you?\"\n    }\n  ],\n  \"maxTokens\": 100,\n  \"temperature\": 0.7,\n  \"stream\": false\n}"
+          "raw": "{\n  \"model\": \"vepler-lite\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello, how are you?\"\n    }\n  ],\n  \"maxTokens\": 100,\n  \"temperature\": 0.7,\n  \"stream\": false\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/v1/chat/completions",
@@ -160,7 +160,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"model\": \"fast-model\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello, how are you?\"\n    }\n  ],\n  \"maxTokens\": 100,\n  \"temperature\": 0.7,\n  \"stream\": false\n}"
+              "raw": "{\n  \"model\": \"vepler-lite\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello, how are you?\"\n    }\n  ],\n  \"maxTokens\": 100,\n  \"temperature\": 0.7,\n  \"stream\": false\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/v1/chat/completions",
@@ -178,7 +178,7 @@
             }
           ],
           "cookie": [],
-          "body": "{\n  \"id\": \"chatcmpl-123\",\n  \"object\": \"chat.completion\",\n  \"created\": 1677652288,\n  \"model\": \"fast-model\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"Hello! I'm doing well, thank you for asking.\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 10,\n    \"completion_tokens\": 12,\n    \"total_tokens\": 22\n  }\n}"
+          "body": "{\n  \"id\": \"chatcmpl-123\",\n  \"object\": \"chat.completion\",\n  \"created\": 1677652288,\n  \"model\": \"vepler-lite\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"Hello! I'm doing well, thank you for asking.\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 10,\n    \"completion_tokens\": 12,\n    \"total_tokens\": 22\n  }\n}"
         }
       ]
     },
